@@ -10,6 +10,7 @@ public class GameStartState : BaseState
     private const int N_PLAYERS = 2;
     private const string SELECT_MODE_STRING = "Please select a game mode.\nPress '1' for SinglePlayer.\nPress '2' for MultiPlayer";
     private GameField field;
+    private GameFieldUI fieldUI;
     private Player[] players;
     private PlayerMode mode;
     private int firstPlayerIndex;
@@ -25,38 +26,52 @@ public class GameStartState : BaseState
             throw new ArgumentNullException(nameof(parameters));
         }
 
-        if (parameters.Length != 2)
+        if (parameters.Length != 3)
         {
             throw new ArgumentException(nameof(parameters));
         }
 
-        if (parameters[0] is not GameField || parameters[1] is not IInputProcessor)
-        {
-            throw new ArgumentException(nameof(parameters));
-        }
+        //if (parameters[0] is not GameField || parameters[1] is not IInputProcessor)
+        //{
+        //    throw new ArgumentException(nameof(parameters));
+        //}
 
         field = (GameField)parameters[0];
-        inputProcessor = (IInputProcessor)parameters[1];
+        fieldUI = (GameFieldUI)parameters[1];
+        inputProcessor = (IInputProcessor)parameters[2];
 
         field.Reset();
         players = new Player[N_PLAYERS];
 
-        Render();
+        //Render();
     }
 
     public override void Update()
     {
-        var key = inputProcessor.GetKey();
+        mode = PlayerMode.SinglePlayer;
 
-        if (key == KeyCode.Alpha1 || key == KeyCode.Alpha2)
-        {
-            mode = (key == KeyCode.Alpha1) ? PlayerMode.SinglePlayer : PlayerMode.MultiPlayer;
+        InitializePlayers();
+        SetPlayersElements();
+        SetFirstPlayer();
+        StateMachine.ChangeState(
+            new TurnState(), 
+            field, 
+            fieldUI, 
+            players, 
+            firstPlayerIndex, 
+            inputProcessor);
 
-            InitializePlayers();
-            SetPlayersElements();
-            SetFirstPlayer();
-            StateMachine.ChangeState(new TurnState(), field, players, firstPlayerIndex, inputProcessor);
-        }
+        //var key = inputProcessor.GetKey();
+
+        //if (key == KeyCode.Alpha1 || key == KeyCode.Alpha2)
+        //{
+        //    mode = (key == KeyCode.Alpha1) ? PlayerMode.SinglePlayer : PlayerMode.MultiPlayer;
+
+        //    InitializePlayers();
+        //    SetPlayersElements();
+        //    SetFirstPlayer();
+        //    StateMachine.ChangeState(new TurnState(), field, players, firstPlayerIndex, inputProcessor);
+        //}
     }
 
     public override void Render()

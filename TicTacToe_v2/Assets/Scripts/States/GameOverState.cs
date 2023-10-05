@@ -7,6 +7,7 @@ public class GameOverState : BaseState
 {
     private WinOutcome winner;
     private GameField field;
+    private GameFieldUI fieldUI;
     private IInputProcessor inputProcessor;
 
     private const string WINNER_SHOW_STRING = "Winner is {0}";
@@ -20,21 +21,20 @@ public class GameOverState : BaseState
             throw new ArgumentNullException(nameof(parameters));
         }
 
-        if (parameters.Length != 3)
-        {
-            throw new ArgumentException(nameof(parameters));
-        }
+        //if (parameters.Length != 3)
+        //{
+        //    throw new ArgumentException(nameof(parameters));
+        //}
 
-        if (parameters[0] is not WinOutcome || parameters[1] is not GameField)
-        {
-            throw new ArgumentException(nameof(parameters));
-        }
+        //if (parameters[0] is not WinOutcome || parameters[1] is not GameField)
+        //{
+        //    throw new ArgumentException(nameof(parameters));
+        //}
 
         winner = (WinOutcome)parameters[0];
         field = (GameField)parameters[1];
-        inputProcessor = (IInputProcessor)parameters[2];
-
-        Render();
+        fieldUI = (GameFieldUI)parameters[2];
+        inputProcessor = (IInputProcessor)parameters[3];
     }
 
     public override void Update()
@@ -54,7 +54,7 @@ public class GameOverState : BaseState
     {
         //FieldRenderer.RenderField(field);
 
-        Console.WriteLine(String.Format(WINNER_SHOW_STRING, winner));
-        Console.WriteLine(String.Format(PRESS_TO_RESTART_STRING, RESTART_BUTTON));
+        //Console.WriteLine(String.Format(WINNER_SHOW_STRING, winner));
+        //Console.WriteLine(String.Format(PRESS_TO_RESTART_STRING, RESTART_BUTTON));
     }
 }

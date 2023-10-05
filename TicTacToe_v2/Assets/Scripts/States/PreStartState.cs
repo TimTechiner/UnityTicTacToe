@@ -5,10 +5,17 @@ using UnityEngine;
 public class PreStartState : BaseState
 {
     private GameField field;
+    private GameFieldUI fieldUI;
+    private IInputProcessor inputProcessor;
 
-    public void Enter(params object[] parameters)
+    public override void Enter(params object[] parameters)
     {
+        fieldUI = (GameFieldUI)parameters[0];
+
         field = new GameField();
-        StateMachine.ChangeState(new GameStartState(), field);
+
+        inputProcessor = new BasicInputProcessor(fieldUI);
+
+        StateMachine.ChangeState(new GameStartState(), field, fieldUI, inputProcessor);
     }
 }

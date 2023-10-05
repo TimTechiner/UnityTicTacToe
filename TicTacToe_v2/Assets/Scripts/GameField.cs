@@ -28,7 +28,21 @@ public class GameField
 
     public int Size => FIELDSIZE;
 
-    public event EventHandler<EventArgs>? OnFieldChanged;
+    public event EventHandler<OnFieldChangedEventArgs>? OnFieldChanged;
+
+    public class OnFieldChangedEventArgs : EventArgs
+    {
+        public int RowIndex { get; }
+        public int ColumnIndex { get; }
+        public Element Element { get; }
+        
+        public OnFieldChangedEventArgs(int rowIndex, int columnIndex, Element element)
+        {
+            RowIndex = rowIndex;
+            ColumnIndex = columnIndex;
+            Element = element;
+        }
+    }
 
     public Element this[(int, int) position]
     {
@@ -39,7 +53,8 @@ public class GameField
         set
         {
             _field[position.Item1, position.Item2] = value;
-            OnFieldChanged?.Invoke(this, EventArgs.Empty);
+            OnFieldChangedEventArgs args = new OnFieldChangedEventArgs(position.Item1, position.Item2, value);
+            OnFieldChanged?.Invoke(this, args);
         }
     }
 

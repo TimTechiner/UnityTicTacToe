@@ -8,6 +8,7 @@ public class TurnState : BaseState
     private int currentPlayerIndex;
     private Player[] players;
     private GameField field;
+    private GameFieldUI fieldUI;
     private IInputProcessor inputProcessor;
 
     public override void Enter(params object[] parameters)
@@ -17,28 +18,32 @@ public class TurnState : BaseState
             throw new ArgumentNullException(nameof(parameters));
         }
 
-        if (parameters.Length != 4)
-        {
-            throw new ArgumentException(nameof(parameters));
-        }
+        //if (parameters.Length != 5)
+        //{
+        //    throw new ArgumentException(nameof(parameters));
+        //}
 
-        if (parameters[0] is not GameField
-            || parameters[1] is not Player[]
-            || parameters[2] is not int
-            || parameters[3] is not IInputProcessor)
-        {
-            throw new ArgumentException(nameof(parameters));
-        }
+        //if (parameters[0] is not GameField
+        //    || parameters[1] is not Player[]
+        //    || parameters[2] is not int
+        //    || parameters[3] is not IInputProcessor)
+        //{
+        //    throw new ArgumentException(nameof(parameters));
+        //}
 
 
         field = (GameField)parameters[0];
-        players = (Player[])parameters[1];
-        currentPlayerIndex = (int)parameters[2];
-        inputProcessor = (IInputProcessor)parameters[3];
+        fieldUI = (GameFieldUI)parameters[1];
+        players = (Player[])parameters[2];
+        currentPlayerIndex = (int)parameters[3];
+        inputProcessor = (IInputProcessor)parameters[4];
+
+        inputProcessor.Reset();
+        fieldUI.gameObject.SetActive(true);
 
         field.OnFieldChanged += Field_OnFieldChanged;
 
-        Render();
+        //Render();
     }
 
     public override void Update()
@@ -54,20 +59,28 @@ public class TurnState : BaseState
         //FieldRenderer.RenderField(field);
     }
 
-    private void Field_OnFieldChanged(object? sender, EventArgs e)
+    private void Field_OnFieldChanged(object? sender, GameField.OnFieldChangedEventArgs e)
     {
         field.OnFieldChanged -= Field_OnFieldChanged;
+
+        fieldUI.Render(e.RowIndex, e.ColumnIndex, e.Element);
 
         WinOutcome winner;
 
         if (IsGameOver(out winner))
         {
-            StateMachine.ChangeState(new GameOverState(), winner, field, inputProcessor);
+            StateMachine.ChangeState(new GameOverState(), winner, field, fieldUI, inputProcessor);
         }
         else
         {
             int newPlayerIndex = (currentPlayerIndex + 1) % 2;
-            StateMachine.ChangeState(new TurnState(), field, players, newPlayerIndex, inputProcessor);
+            StateMachine.ChangeState(
+                new TurnState(),
+                field, 
+                fieldUI, 
+                players, 
+                newPlayerIndex, 
+                inputProcessor);
         }
     }
 
