@@ -4,18 +4,27 @@ using UnityEngine;
 
 public class PreStartState : BaseState
 {
+    private InterStateUIData data;
     private GameField field;
     private GameFieldUI fieldUI;
     private IInputProcessor inputProcessor;
+    private int[] scores;
 
     public override void Enter(params object[] parameters)
     {
-        fieldUI = (GameFieldUI)parameters[0];
+        data = parameters[0] as InterStateUIData;
+
+        fieldUI = data.GameFieldUI;
 
         field = new GameField();
 
         inputProcessor = new BasicInputProcessor(fieldUI);
 
-        StateMachine.ChangeState(new GameStartState(), field, fieldUI, inputProcessor);
+        scores = new int[3];
+    }
+
+    public override void Update()
+    {
+        StateMachine.ChangeState(new GameStartState(), data, field, inputProcessor, scores);
     }
 }

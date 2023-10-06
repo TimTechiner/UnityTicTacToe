@@ -28,8 +28,8 @@ public class BasicInputProcessor : IInputProcessor
         clickedCell = (-1, -1);
     }
 
-    public KeyCode GetKey()
+    public bool GetKeyDown(KeyCode key)
     {
-        return KeyCode.None;
+        return Input.GetKeyDown(key);
     }
 }

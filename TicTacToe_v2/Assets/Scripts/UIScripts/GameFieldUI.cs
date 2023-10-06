@@ -50,6 +50,22 @@ public class GameFieldUI : MonoBehaviour
         }
     }
 
+    public void ResetField()
+    {
+        if (cellImages == null) return;
+
+        for (int i = 0; i < cellImages.Length; i++)
+        {
+            cellImages[i].sprite = null;
+            cellImages[i].color =
+                new Color(
+                    cellImages[i].color.r,
+                    cellImages[i].color.g,
+                    cellImages[i].color.b,
+                    0);
+        }
+    }
+
     public void Render(int rowIndex, int columnIndex, Element insertedElement)
     {
         int lineIndex = rowIndex * GameField.FIELDSIZE + columnIndex;

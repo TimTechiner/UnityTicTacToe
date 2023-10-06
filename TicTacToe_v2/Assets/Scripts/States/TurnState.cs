@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class TurnState : BaseState
@@ -9,7 +10,10 @@ public class TurnState : BaseState
     private Player[] players;
     private GameField field;
     private GameFieldUI fieldUI;
+    private TextMeshProUGUI[] scoreTexts;
     private IInputProcessor inputProcessor;
+    private InterStateUIData data;
+    private int[] scores;
 
     public override void Enter(params object[] parameters)
     {
@@ -31,15 +35,21 @@ public class TurnState : BaseState
         //    throw new ArgumentException(nameof(parameters));
         //}
 
-
-        field = (GameField)parameters[0];
-        fieldUI = (GameFieldUI)parameters[1];
+        data = (InterStateUIData)parameters[0];
+        field = (GameField)parameters[1];
         players = (Player[])parameters[2];
         currentPlayerIndex = (int)parameters[3];
         inputProcessor = (IInputProcessor)parameters[4];
+        scores = (int[])parameters[5];
+
+        fieldUI = data.GameFieldUI;
+        scoreTexts = data.ScoreTexts;
 
         inputProcessor.Reset();
         fieldUI.gameObject.SetActive(true);
+
+        var scoreUI = scoreTexts[0].gameObject.transform.parent.gameObject.transform.parent.gameObject;
+        scoreUI.SetActive(true);
 
         field.OnFieldChanged += Field_OnFieldChanged;
 
@@ -69,18 +79,19 @@ public class TurnState : BaseState
 
         if (IsGameOver(out winner))
         {
-            StateMachine.ChangeState(new GameOverState(), winner, field, fieldUI, inputProcessor);
+            StateMachine.ChangeState(new GameOverState(), data, field, inputProcessor, winner, scores);
         }
         else
         {
             int newPlayerIndex = (currentPlayerIndex + 1) % 2;
             StateMachine.ChangeState(
                 new TurnState(),
+                data,
                 field, 
-                fieldUI, 
                 players, 
                 newPlayerIndex, 
-                inputProcessor);
+                inputProcessor,
+                scores);
         }
     }
 

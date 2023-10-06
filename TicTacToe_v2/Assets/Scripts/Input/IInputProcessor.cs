@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IInputProcessor 
 {
-    public KeyCode GetKey();
+    public bool GetKeyDown(KeyCode key);
 
     public (int, int) GetClickedButton();
 

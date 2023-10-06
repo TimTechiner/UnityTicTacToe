@@ -15,32 +15,37 @@ public class GameStartState : BaseState
     private PlayerMode mode;
     private int firstPlayerIndex;
     private IInputProcessor inputProcessor;
+    private int[] scores;
+
+    private InterStateUIData data;
 
     public Player[] Players => players;
     public PlayerMode Mode => mode;
 
     public override void Enter(params object[] parameters)
     {
-        if (parameters == null)
-        {
-            throw new ArgumentNullException(nameof(parameters));
-        }
+        //if (parameters == null)
+        //{
+        //    throw new ArgumentNullException(nameof(parameters));
+        //}
 
-        if (parameters.Length != 3)
-        {
-            throw new ArgumentException(nameof(parameters));
-        }
+        //if (parameters.Length != 3)
+        //{
+        //    throw new ArgumentException(nameof(parameters));
+        //}
 
         //if (parameters[0] is not GameField || parameters[1] is not IInputProcessor)
         //{
         //    throw new ArgumentException(nameof(parameters));
         //}
 
-        field = (GameField)parameters[0];
-        fieldUI = (GameFieldUI)parameters[1];
+        data = parameters[0] as InterStateUIData;
+        field = (GameField)parameters[1];
         inputProcessor = (IInputProcessor)parameters[2];
+        scores = (int[])parameters[3];
 
-        field.Reset();
+        fieldUI = data.GameFieldUI;
+
         players = new Player[N_PLAYERS];
 
         //Render();
@@ -48,6 +53,10 @@ public class GameStartState : BaseState
 
     public override void Update()
     {
+        field.Reset();
+
+        fieldUI.ResetField();
+
         mode = PlayerMode.SinglePlayer;
 
         InitializePlayers();
@@ -55,11 +64,12 @@ public class GameStartState : BaseState
         SetFirstPlayer();
         StateMachine.ChangeState(
             new TurnState(), 
+            data,
             field, 
-            fieldUI, 
             players, 
             firstPlayerIndex, 
-            inputProcessor);
+            inputProcessor,
+            scores);
 
         //var key = inputProcessor.GetKey();
 

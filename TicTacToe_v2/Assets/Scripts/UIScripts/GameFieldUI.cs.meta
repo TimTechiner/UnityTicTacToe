@@ -3,7 +3,9 @@ guid: bbd705c2ba7c9754181ce93e5f9981ff
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - crossSprite: {fileID: 21300000, guid: df164abb2287aff4aae745812902516b, type: 3}
+  - circleSprite: {fileID: 21300000, guid: ad4debb2bbc5d7b428cb042f468e5333, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

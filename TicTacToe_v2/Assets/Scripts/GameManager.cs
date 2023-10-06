@@ -11,13 +11,15 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI gameOverText;
 
-    private GameFieldUI gameFieldUI;
+    [SerializeField]
+    private TextMeshProUGUI[] scoreTexts;
+
+    [SerializeField]
+    private GameObject exitToMenuButtonObject;
 
     // Start is called before the first frame update
     private void Start()
     {
-        gameFieldUI = gameFieldUIObject.GetComponent<GameFieldUI>();
-
         StartGame();
     }
 
@@ -30,6 +32,12 @@ public class GameManager : MonoBehaviour
 
     private void StartGame()
     {
-        StateMachine.ChangeState(new PreStartState(), gameFieldUI);
+        InterStateUIData data = new InterStateUIData();
+        data.GameFieldUI = gameFieldUIObject.GetComponent<GameFieldUI>();
+        data.ExitToMenuButton = exitToMenuButtonObject;
+        data.GameOverText = gameOverText;
+        data.ScoreTexts = scoreTexts;
+
+        StateMachine.ChangeState(new PreStartState(), data);
     }
 }
