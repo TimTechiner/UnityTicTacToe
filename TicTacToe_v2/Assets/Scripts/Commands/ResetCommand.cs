@@ -8,9 +8,11 @@ public class ResetCommand : ICommand
     private readonly GameField field;
     private readonly IInputProcessor inputProcessor;
     private readonly InterStateUIData data;
-    private int[] scores;
+    private readonly Dictionary<string, int> scores;
+    private readonly PlayMode playMode;
+    private readonly Player[] players;
 
-    public ResetCommand(InterStateUIData data, GameField field, IInputProcessor inputProcessor, int[] scores)
+    public ResetCommand(InterStateUIData data, GameField field, IInputProcessor inputProcessor, Dictionary<string, int> scores, PlayMode playMode, Player[] players)
     {
         if (field == null)
         {
@@ -26,10 +28,12 @@ public class ResetCommand : ICommand
         this.field = field;
         this.inputProcessor = inputProcessor;
         this.scores = scores;
+        this.playMode = playMode;
+        this.players = players;
     }
 
     public void Execute()
     {
-        StateMachine.ChangeState(new GameStartState(), data, field, inputProcessor, scores);
+        StateMachine.ChangeState(new GameStartState(), data, field, inputProcessor, scores, playMode, players);
     }
 }

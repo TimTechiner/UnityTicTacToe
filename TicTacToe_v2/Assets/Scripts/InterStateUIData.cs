@@ -9,4 +9,5 @@ public class InterStateUIData
     public GameObject ExitToMenuButton { get; set; }
     public TextMeshProUGUI GameOverText { get; set; }
     public TextMeshProUGUI[] ScoreTexts { get; set; }
+    public TextMeshProUGUI CurrentPlayerText { get; set; }
 }

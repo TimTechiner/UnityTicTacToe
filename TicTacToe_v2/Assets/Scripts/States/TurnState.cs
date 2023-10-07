@@ -13,7 +13,8 @@ public class TurnState : BaseState
     private TextMeshProUGUI[] scoreTexts;
     private IInputProcessor inputProcessor;
     private InterStateUIData data;
-    private int[] scores;
+    private Dictionary<string, int> scores;
+    private PlayMode playMode;
 
     public override void Enter(params object[] parameters)
     {
@@ -40,10 +41,12 @@ public class TurnState : BaseState
         players = (Player[])parameters[2];
         currentPlayerIndex = (int)parameters[3];
         inputProcessor = (IInputProcessor)parameters[4];
-        scores = (int[])parameters[5];
+        scores = (Dictionary<string, int>)parameters[5];
+        playMode = (PlayMode)parameters[6];
 
         fieldUI = data.GameFieldUI;
         scoreTexts = data.ScoreTexts;
+        
 
         inputProcessor.Reset();
         fieldUI.gameObject.SetActive(true);
@@ -51,9 +54,12 @@ public class TurnState : BaseState
         var scoreUI = scoreTexts[0].gameObject.transform.parent.gameObject.transform.parent.gameObject;
         scoreUI.SetActive(true);
 
-        field.OnFieldChanged += Field_OnFieldChanged;
+        data.CurrentPlayerText.text = $"Turn: Player{currentPlayerIndex + 1}";
+        data.CurrentPlayerText.gameObject.SetActive(true);
 
-        //Render();
+
+
+        field.OnFieldChanged += Field_OnFieldChanged;
     }
 
     public override void Update()
@@ -62,14 +68,7 @@ public class TurnState : BaseState
         command.Execute();
     }
 
-    public override void Render()
-    {
-        //Console.WriteLine();
-
-        //FieldRenderer.RenderField(field);
-    }
-
-    private void Field_OnFieldChanged(object? sender, GameField.OnFieldChangedEventArgs e)
+    private void Field_OnFieldChanged(object sender, GameField.OnFieldChangedEventArgs e)
     {
         field.OnFieldChanged -= Field_OnFieldChanged;
 
@@ -79,7 +78,7 @@ public class TurnState : BaseState
 
         if (IsGameOver(out winner))
         {
-            StateMachine.ChangeState(new GameOverState(), data, field, inputProcessor, winner, scores);
+            StateMachine.ChangeState(new GameOverState(), data, field, inputProcessor, winner, currentPlayerIndex, scores, playMode, players);
         }
         else
         {
@@ -91,7 +90,8 @@ public class TurnState : BaseState
                 players, 
                 newPlayerIndex, 
                 inputProcessor,
-                scores);
+                scores,
+                playMode);
         }
     }
 

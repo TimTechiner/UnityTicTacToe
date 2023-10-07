@@ -28,7 +28,7 @@ public class GameField
 
     public int Size => FIELDSIZE;
 
-    public event EventHandler<OnFieldChangedEventArgs>? OnFieldChanged;
+    public event EventHandler<OnFieldChangedEventArgs> OnFieldChanged;
 
     public class OnFieldChangedEventArgs : EventArgs
     {

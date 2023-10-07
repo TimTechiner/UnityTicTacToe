@@ -17,6 +17,12 @@ public class GameFieldUI : MonoBehaviour
     [SerializeField]
     private Sprite circleSprite;
 
+    [SerializeField]
+    private LoadManager loadManager;
+
+    [SerializeField]
+    private Image boardImage;
+
     private Image[] cellImages;
 
     public event EventHandler<OnCellClickedEventArgs> OnCellClicked;
@@ -37,6 +43,17 @@ public class GameFieldUI : MonoBehaviour
     private void Start()
     {
         cellImages = cells.Select(c => c.GetComponent<Image>()).ToArray();
+
+        foreach (var cellImage in cellImages)
+        {
+            cellImage.color = new Color(
+                loadManager.CurrentColor.r,
+                loadManager.CurrentColor.g,
+                loadManager.CurrentColor.b,
+                0);
+        }
+
+        boardImage.color = loadManager.CurrentColor;
 
         for (int i = 0; i < cells.Length; i++)
         {

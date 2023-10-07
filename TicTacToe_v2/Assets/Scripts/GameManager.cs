@@ -17,6 +17,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject exitToMenuButtonObject;
 
+    [SerializeField]
+    private TextMeshProUGUI currentPlayerText;
+
+    public static PlayerMode PlayerMode { get; set; }
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -37,7 +42,8 @@ public class GameManager : MonoBehaviour
         data.ExitToMenuButton = exitToMenuButtonObject;
         data.GameOverText = gameOverText;
         data.ScoreTexts = scoreTexts;
+        data.CurrentPlayerText = currentPlayerText;
 
-        StateMachine.ChangeState(new PreStartState(), data);
+        StateMachine.ChangeState(new PreStartState(), data, PlayerMode);
     }
 }

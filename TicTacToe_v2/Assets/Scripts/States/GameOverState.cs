@@ -2,17 +2,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 
 public class GameOverState : BaseState
 {
     private WinOutcome winner;
+    private int lastPlayerIndex;
     private GameField field;
     private GameFieldUI fieldUI;
     private TextMeshProUGUI gameOverText;
     private IInputProcessor inputProcessor;
     private InterStateUIData data;
-    private int[] scores;
+    private Dictionary<string, int> scores;
+    private PlayMode playMode;
+    private Player[] players;
 
     private const string WINNER_SHOW_STRING = "Winner is {0}";
     private const string PRESS_TO_RESTART_STRING = "Press {0} to restart a game";
@@ -39,29 +43,34 @@ public class GameOverState : BaseState
         field = (GameField)parameters[1];
         inputProcessor = (IInputProcessor)parameters[2];
         winner = (WinOutcome)parameters[3];
-        scores = (int[])parameters[4];
+        lastPlayerIndex = (int)parameters[4];
+        scores = (Dictionary<string, int>)parameters[5];
+        playMode = (PlayMode)parameters[6];
+        players = (Player[])parameters[7];
 
         fieldUI = data.GameFieldUI;
         gameOverText = data.GameOverText;
         gameOverText.gameObject.SetActive(true);
 
-        switch (winner)
+        if (winner == WinOutcome.Draw)
         {
-            case WinOutcome.Cross:
-                scores[0] += 1;
-                break;
-            case WinOutcome.Circle:
-                scores[1] += 1;
-                break;
-            case WinOutcome.Draw:
-                scores[2] += 1;
-                break;
+            scores["Draw"] += 1;
+        }
+        else
+        {
+            if (lastPlayerIndex == 0)
+            {
+                scores["Player1"] += 1;
+            }
+            else if (lastPlayerIndex == 1)
+            {
+                scores["Player2"] += 1;
+            }
         }
 
-        for (int i = 0; i < scores.Length; i++)
-        {
-            data.ScoreTexts[i].text = scores[i].ToString();
-        }
+        data.ScoreTexts[0].text = scores["Player1"].ToString();
+        data.ScoreTexts[2].text = scores["Draw"].ToString();
+        data.ScoreTexts[1].text = scores["Player2"].ToString();
     }
 
     public override void Update()
@@ -70,18 +79,10 @@ public class GameOverState : BaseState
 
         if (inputProcessor.GetKeyDown(KeyCode.R))
         {
-            command = new ResetCommand(data, field, inputProcessor, scores);
+            command = new ResetCommand(data, field, inputProcessor, scores, playMode, players);
         }
 
         command.Execute();
-    }
-
-    public override void Render()
-    {
-        //FieldRenderer.RenderField(field);
-
-        //Console.WriteLine(String.Format(WINNER_SHOW_STRING, winner));
-        //Console.WriteLine(String.Format(PRESS_TO_RESTART_STRING, RESTART_BUTTON));
     }
 
     public override void Exit()

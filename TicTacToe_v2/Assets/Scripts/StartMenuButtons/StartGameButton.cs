@@ -6,19 +6,18 @@ using UnityEngine.UI;
 
 public class StartGameButton : MonoBehaviour
 {
-    private Button startGameButton;
-
-    private const string MAIN_SCENE_NAME = "SampleScene";
+    [SerializeField]
+    private GameObject selectPlayModePopup;
 
     // Start is called before the first frame update
     private void Start()
     {
-        startGameButton = GetComponent<Button>();
-        startGameButton.onClick.AddListener(StartGame);
+        Button startGameButton = GetComponent<Button>();
+        startGameButton.onClick.AddListener(ShowSelectPlayModePopup);
     }
 
-    private void StartGame()
+    private void ShowSelectPlayModePopup()
     {
-        SceneManager.LoadScene(MAIN_SCENE_NAME);
+        selectPlayModePopup.SetActive(true);
     }
 }
