@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class BackButton : MonoBehaviour
 {
     [SerializeField]
-    private GameObject selectPlayModePopup;
+    private GameObject popup;
 
     // Start is called before the first frame update
     void Start()
@@ -14,7 +14,7 @@ public class BackButton : MonoBehaviour
         Button backButton = GetComponent<Button>();
         backButton.onClick.AddListener(() =>
         {
-            selectPlayModePopup.SetActive(false);
+            popup.SetActive(false);
         });
     }
 }

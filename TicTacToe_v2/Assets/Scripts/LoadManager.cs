@@ -9,6 +9,8 @@ public class LoadManager : MonoBehaviour
 {
     private const string COLOR_FILE_PATH = "./colors.json";
 
+    private readonly Color basicColor = new Color(255, 255, 255, 255);
+
     private Color currentColor;
 
     public Color CurrentColor
@@ -23,7 +25,15 @@ public class LoadManager : MonoBehaviour
 
     public event EventHandler ColorChanged;
 
-    // Start is called before the first frame update
+    public void SaveData()
+    {
+        if (File.Exists(COLOR_FILE_PATH))
+        {
+            var json = JsonUtility.ToJson(CurrentColor);
+            File.WriteAllText(COLOR_FILE_PATH, json);
+        }
+    }
+
     private void Awake()
     {
         LoadData();
@@ -33,24 +43,28 @@ public class LoadManager : MonoBehaviour
     {
         if (!File.Exists(COLOR_FILE_PATH))
         {
-            using (var fs = File.Create(COLOR_FILE_PATH))
-            {
-                var basicColorJson = JsonUtility.ToJson(new Color(255, 255, 255));
-                byte[] basicColorJsonBytes = Encoding.UTF8.GetBytes(basicColorJson);
-                fs.Write(basicColorJsonBytes);
-            }
+            CreateDefaultFile();
         }
 
-        var json = File.ReadAllText(COLOR_FILE_PATH);
-        CurrentColor = JsonUtility.FromJson<Color>(json);
+        try
+        {
+            var json = File.ReadAllText(COLOR_FILE_PATH);
+            CurrentColor = JsonUtility.FromJson<Color>(json);
+        }
+        catch (ArgumentException)
+        {
+            File.Delete(COLOR_FILE_PATH);
+            LoadData();
+        }
     }
 
-    public void SaveData()
+    private void CreateDefaultFile()
     {
-        if (File.Exists(COLOR_FILE_PATH))
+        using (var fs = File.Create(COLOR_FILE_PATH))
         {
-            var json = JsonUtility.ToJson(CurrentColor);
-            File.WriteAllText(COLOR_FILE_PATH, json);
+            var basicColorJson = JsonUtility.ToJson(basicColor);
+            byte[] basicColorJsonBytes = Encoding.UTF8.GetBytes(basicColorJson);
+            fs.Write(basicColorJsonBytes);
         }
     }
 }

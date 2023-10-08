@@ -22,6 +22,15 @@ public class ColorSlider : MonoBehaviour
     {
         Slider colorSlider = GetComponent<Slider>();
 
+        SetInitialValue(colorSlider);
+
+        colorComponentText.text = colorSlider.value.ToString();
+
+        colorSlider.onValueChanged.AddListener(ChangeColor);
+    }
+
+    private void SetInitialValue(Slider colorSlider)
+    {
         switch (colorComponent)
         {
             case ColorComponent.R:
@@ -34,38 +43,34 @@ public class ColorSlider : MonoBehaviour
                 colorSlider.value = loadManager.CurrentColor.b * MAX_COLOR_VALUE;
                 break;
         }
-
-        colorComponentText.text = colorSlider.value.ToString();
-
-        colorSlider.onValueChanged.AddListener(ChangeColor);
     }
 
     private void ChangeColor(float value)
     {
         colorComponentText.text = value.ToString();
 
-        value = value / MAX_COLOR_VALUE;
+        float normalziedValue = value / MAX_COLOR_VALUE;
+
+        SetNewColor(normalziedValue);
+    }
+
+    private void SetNewColor(float normalizedValue)
+    {
+        Color newColor = loadManager.CurrentColor;
 
         switch (colorComponent)
         {
             case ColorComponent.R:
-                loadManager.CurrentColor = new Color(
-                    value, 
-                    loadManager.CurrentColor.g,
-                    loadManager.CurrentColor.b);
+                newColor.r = normalizedValue;
                 break;
             case ColorComponent.G:
-                loadManager.CurrentColor = new Color(
-                    loadManager.CurrentColor.r,
-                    value,
-                    loadManager.CurrentColor.b);
+                newColor.g = normalizedValue;
                 break;
             case ColorComponent.B:
-                loadManager.CurrentColor = new Color(
-                    loadManager.CurrentColor.r,
-                    loadManager.CurrentColor.g,
-                    value);
+                newColor.b = normalizedValue;
                 break;
         }
+
+        loadManager.CurrentColor = newColor;
     }
 }
