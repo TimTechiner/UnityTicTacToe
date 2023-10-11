@@ -23,18 +23,10 @@ public class TurnState : BaseState
             throw new ArgumentNullException(nameof(parameters));
         }
 
-        //if (parameters.Length != 5)
-        //{
-        //    throw new ArgumentException(nameof(parameters));
-        //}
-
-        //if (parameters[0] is not GameField
-        //    || parameters[1] is not Player[]
-        //    || parameters[2] is not int
-        //    || parameters[3] is not IInputProcessor)
-        //{
-        //    throw new ArgumentException(nameof(parameters));
-        //}
+        if (parameters.Length != 7)
+        {
+            throw new ArgumentException(nameof(parameters));
+        }
 
         data = (InterStateUIData)parameters[0];
         field = (GameField)parameters[1];
@@ -76,9 +68,11 @@ public class TurnState : BaseState
 
         WinOutcome winner;
 
-        if (IsGameOver(out winner))
+        List<int> winnerIndexes;
+
+        if (IsGameOver(out winner, out winnerIndexes))
         {
-            StateMachine.ChangeState(new GameOverState(), data, field, inputProcessor, winner, currentPlayerIndex, scores, playMode, players);
+            StateMachine.ChangeState(new GameOverState(), data, field, inputProcessor, winner, currentPlayerIndex, scores, playMode, players, winnerIndexes);
         }
         else
         {
@@ -95,9 +89,11 @@ public class TurnState : BaseState
         }
     }
 
-    private bool IsGameOver(out WinOutcome winner)
+    private bool IsGameOver(out WinOutcome winner, out List<int> winnerIndex)
     {
         winner = FieldValidator.GetWinner(field);
+
+        winnerIndex = FieldValidator.GetWinnerIndexes(field);
 
         return winner != WinOutcome.None;
     }

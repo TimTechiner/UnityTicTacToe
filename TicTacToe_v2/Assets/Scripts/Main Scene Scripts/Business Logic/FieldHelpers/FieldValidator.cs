@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 public static class FieldValidator
@@ -15,6 +16,8 @@ public static class FieldValidator
 
     public static WinOutcome GetWinner(GameField field)
     {
+        List<int> winnerIndexes = new List<int>();
+
         var rowWinner = GetWinnerByRows(field);
 
         var columnWinner = GetWinnerByColumns(field);
@@ -35,6 +38,18 @@ public static class FieldValidator
         var winner = TryGetWinnerFromWinners(winners, field);
 
         return winner;
+    }
+
+    public static List<int> GetWinnerIndexes(GameField field)
+    {
+        List<int> winnerIndexes = new List<int>();
+
+        winnerIndexes.Add(GetWinnerIndexByRows(field));
+        winnerIndexes.Add(GetWinnerIndexByColumns(field));
+        winnerIndexes.Add(GetWinnerIndexByMainDiagonal(field));
+        winnerIndexes.Add(GetWinnerIndexByAntiDiagonal(field));
+
+        return winnerIndexes;
     }
 
     public static WinOutcome GetAlmostWinnerByRow(GameField field, int rowIndex)
@@ -111,6 +126,40 @@ public static class FieldValidator
         return GetWinnerByVectors(field.Size, field.GetColumn);
     }
 
+    private static int GetWinnerIndexByRows(GameField field)
+    {
+        return GetWinnerIndexByVectors(field.Size, field.GetRow);
+    }
+
+    private static int GetWinnerIndexByColumns(GameField field)
+    {
+        return GetWinnerIndexByVectors(field.Size, field.GetColumn);
+    }
+
+    private static int GetWinnerIndexByMainDiagonal(GameField field)
+    {
+        return GetWinnerIndexByDiagonal(field.GetMainDiagonal());
+    }
+
+    private static int GetWinnerIndexByAntiDiagonal(GameField field)
+    {
+        return GetWinnerIndexByDiagonal(field.GetAntiDiagonal());
+    }
+
+    private static int GetWinnerIndexByDiagonal(IEnumerable<Element> diagonal)
+    {
+        var winner = GetDiagonalWinner(diagonal);
+
+        if (winner != WinOutcome.None)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
     private static WinOutcome GetWinnerByVectors(int fieldSize, Func<int, IEnumerable<Element>> getVector)
     {
         WinOutcome winner = WinOutcome.None;
@@ -127,6 +176,22 @@ public static class FieldValidator
         }
 
         return winner;
+    }
+
+
+    private static int GetWinnerIndexByVectors(int fieldSize, Func<int, IEnumerable<Element>> getVector)
+    {
+        for (int i = 0; i < fieldSize; i++)
+        {
+            var vector = getVector(i);
+            var newWinner = GetVectorWinner(vector);
+
+            if (newWinner == WinOutcome.Cross || newWinner == WinOutcome.Circle)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static WinOutcome GetVectorWinner(IEnumerable<Element> vector)

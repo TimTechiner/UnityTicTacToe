@@ -23,7 +23,16 @@ public class GameFieldUI : MonoBehaviour
     [SerializeField]
     private Image boardImage;
 
+    [SerializeField]
+    private GameObject[] strokes;
+
+    private Image[] strokeImages;
+
     private Image[] cellImages;
+
+    private Animator[] strokeAnimators;
+
+    private const string ANIMATOR_HAS_WINNER = "HasWinner";
 
     public event EventHandler<OnCellClickedEventArgs> OnCellClicked;
 
@@ -44,6 +53,10 @@ public class GameFieldUI : MonoBehaviour
     {
         cellImages = cells.Select(c => c.GetComponent<Image>()).ToArray();
 
+        strokeImages = strokes.Select(s => s.GetComponent<Image>()).ToArray();
+
+        strokeAnimators = strokes.Select(s => s.GetComponent<Animator>()).ToArray();
+
         foreach (var cellImage in cellImages)
         {
             cellImage.color = new Color(
@@ -51,6 +64,11 @@ public class GameFieldUI : MonoBehaviour
                 loadManager.CurrentColor.g,
                 loadManager.CurrentColor.b,
                 0);
+        }
+
+        foreach (var strokeImage in strokeImages)
+        {
+            strokeImage.color = loadManager.CurrentColor;
         }
 
         boardImage.color = loadManager.CurrentColor;
@@ -81,6 +99,36 @@ public class GameFieldUI : MonoBehaviour
                     cellImages[i].color.b,
                     0);
         }
+    }
+
+    public void SetEnabledHorizontalStroke(int rowIndex, bool enabled)
+    {
+        if (rowIndex >= 0)
+        {
+            strokes[rowIndex].SetActive(enabled);
+            strokeAnimators[rowIndex].SetBool(ANIMATOR_HAS_WINNER, enabled);
+        }
+    }
+
+    public void SetEnabledVerticalStroke(int columnIndex, bool enabled)
+    {
+        if (columnIndex >= 0)
+        {
+            strokes[GameField.FIELDSIZE + columnIndex].SetActive(enabled);
+            strokeAnimators[GameField.FIELDSIZE + columnIndex].SetBool(ANIMATOR_HAS_WINNER, enabled);
+        }
+    }
+
+    public void RenderMainDiagonalStroke(bool enabled)
+    {
+        strokes[2 * GameField.FIELDSIZE].SetActive(enabled);
+        strokeAnimators[2 * GameField.FIELDSIZE].SetBool(ANIMATOR_HAS_WINNER, enabled);
+    }
+
+    public void RenderAntiDiagonalStroke(bool enabled)
+    {
+        strokes[2 * GameField.FIELDSIZE + 1].SetActive(enabled);
+        strokeAnimators[2 * GameField.FIELDSIZE + 1].SetBool(ANIMATOR_HAS_WINNER, enabled);
     }
 
     public void Render(int rowIndex, int columnIndex, Element insertedElement)

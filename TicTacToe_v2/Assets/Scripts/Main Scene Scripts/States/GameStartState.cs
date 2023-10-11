@@ -20,20 +20,15 @@ public class GameStartState : BaseState
 
     public override void Enter(params object[] parameters)
     {
-        //if (parameters == null)
-        //{
-        //    throw new ArgumentNullException(nameof(parameters));
-        //}
+        if (parameters == null)
+        {
+            throw new ArgumentNullException(nameof(parameters));
+        }
 
-        //if (parameters.Length != 3)
-        //{
-        //    throw new ArgumentException(nameof(parameters));
-        //}
-
-        //if (parameters[0] is not GameField || parameters[1] is not IInputProcessor)
-        //{
-        //    throw new ArgumentException(nameof(parameters));
-        //}
+        if (parameters.Length != 6)
+        {
+            throw new ArgumentException(nameof(parameters));
+        }
 
         data = parameters[0] as InterStateUIData;
         field = (GameField)parameters[1];

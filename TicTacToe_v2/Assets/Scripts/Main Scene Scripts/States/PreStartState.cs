@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +18,16 @@ public class PreStartState : BaseState
 
     public override void Enter(params object[] parameters)
     {
+        if (parameters == null)
+        {
+            throw new ArgumentNullException(nameof(parameters));
+        }
+
+        if (parameters.Length != 2)
+        {
+            throw new ArgumentException(nameof(parameters));
+        }
+
         data = (InterStateUIData)parameters[0];
 
         playMode = (PlayerMode)parameters[1];

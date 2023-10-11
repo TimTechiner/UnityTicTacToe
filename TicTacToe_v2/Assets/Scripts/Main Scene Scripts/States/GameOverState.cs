@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class GameOverState : BaseState
 {
     private WinOutcome winner;
+    private List<int> winnerIndexes;
     private int lastPlayerIndex;
     private GameField field;
     private GameFieldUI fieldUI;
@@ -29,15 +32,10 @@ public class GameOverState : BaseState
             throw new ArgumentNullException(nameof(parameters));
         }
 
-        //if (parameters.Length != 3)
-        //{
-        //    throw new ArgumentException(nameof(parameters));
-        //}
-
-        //if (parameters[0] is not WinOutcome || parameters[1] is not GameField)
-        //{
-        //    throw new ArgumentException(nameof(parameters));
-        //}
+        if (parameters.Length != 9)
+        {
+            throw new ArgumentException(nameof(parameters));
+        }
 
         data = (InterStateUIData)parameters[0];
         field = (GameField)parameters[1];
@@ -47,6 +45,7 @@ public class GameOverState : BaseState
         scores = (Dictionary<string, int>)parameters[5];
         playMode = (PlayMode)parameters[6];
         players = (Player[])parameters[7];
+        winnerIndexes = (List<int>)parameters[8];
 
         fieldUI = data.GameFieldUI;
         gameOverText = data.GameOverText;
@@ -71,6 +70,36 @@ public class GameOverState : BaseState
         data.ScoreTexts[0].text = scores["Player1"].ToString();
         data.ScoreTexts[2].text = scores["Draw"].ToString();
         data.ScoreTexts[1].text = scores["Player2"].ToString();
+
+        SetEnabledStrokes(true);
+    }
+
+    private void SetEnabledStrokes(bool enabled)
+    {
+        var horizontalIndex = winnerIndexes[0];
+        var verticalIndex = winnerIndexes[1];
+        var mainDiagonalIndex = winnerIndexes[2];
+        var antiDiagonalIndex = winnerIndexes[3];
+
+        if (horizontalIndex >= 0)
+        {
+            fieldUI.SetEnabledHorizontalStroke(horizontalIndex, enabled);
+        }
+
+        if (verticalIndex >= 0)
+        {
+            fieldUI.SetEnabledVerticalStroke(verticalIndex, enabled);
+        }
+
+        if (mainDiagonalIndex >= 0)
+        {
+            fieldUI.RenderMainDiagonalStroke(enabled);
+        }
+
+        if (antiDiagonalIndex >= 0)
+        {
+            fieldUI.RenderAntiDiagonalStroke(enabled);
+        }
     }
 
     public override void Update()
@@ -87,6 +116,14 @@ public class GameOverState : BaseState
 
     public override void Exit()
     {
-        gameOverText.gameObject.SetActive(false);
+        if (gameOverText != null)
+        {
+            gameOverText.gameObject.SetActive(false);
+        }
+
+        if (winnerIndexes != null)
+        {
+            SetEnabledStrokes(false);
+        }
     }
 }

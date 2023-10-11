@@ -32,7 +32,6 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         StateMachine.Update();
-        //StateMachine.Render();
     }
 
     private void StartGame()
